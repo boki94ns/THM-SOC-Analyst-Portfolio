@@ -46,7 +46,7 @@ May 1st 2026, 17:38 – 17:40
 
 The investigation started from the alert queue. Event ID `8816` was selected because it was a High severity firewall alert involving access to a blacklisted external URL.
 
-![Alert Queue Review](images/screen01.png)
+![Alert Queue Review](images/screen1.png)
 
 **What this shows:**  
 The SOC simulator shows a High severity firewall alert. The alert indicates that an internal user or host attempted to access an external URL listed in the organization's blacklist or threat intelligence feeds.
@@ -57,7 +57,7 @@ The SOC simulator shows a High severity firewall alert. The alert indicates that
 
 The alert details were reviewed to identify the source, destination, URL, protocol, firewall action, and rule.
 
-![Firewall Alert Details](images/screen02.png)
+![Firewall Alert Details](images/screen2.png)
 
 **What this shows:**  
 The internal host `10.20.2.17` attempted an outbound TCP connection to destination IP `67.199.248.11` over destination port `80`. The requested URL was `http://bit.ly/3sHkX3da12340`. The firewall action was `blocked`, and the triggered rule was `Blocked Websites`.
@@ -71,7 +71,7 @@ This is an outbound web-browsing attempt from an internal host to an external de
 
 The destination IP address `67.199.248.11` was checked in AbuseIPDB.
 
-![AbuseIPDB Destination IP Overview](images/screen03.png)
+![AbuseIPDB Destination IP Overview](images/screen3.png)
 
 **What this shows:**  
 AbuseIPDB shows that `67.199.248.11` exists in its database and has been reported `851` times. The Abuse Confidence Score is `13%`. The IP is associated with Bitly infrastructure, and the hostname/domain shown is `bit.ly`.
@@ -85,7 +85,7 @@ A `13%` Abuse Confidence Score is not strong standalone proof that the IP is mal
 
 The AbuseIPDB report history was reviewed to understand what types of suspicious activity were previously associated with the destination IP.
 
-![AbuseIPDB Report History](images/screen04.png)
+![AbuseIPDB Report History](images/screen4.png)
 
 **What this shows:**  
 The IP has previous reports related to phishing, web attacks, web spam, email spam, spoofing, and unauthorized connection attempts.
@@ -99,7 +99,7 @@ Because this IP is associated with Bitly infrastructure, it should not automatic
 
 The destination IP address `67.199.248.11` was checked in VirusTotal.
 
-![VirusTotal Destination IP Check](images/screen05.png)
+![VirusTotal Destination IP Check](images/screen5.png)
 
 **What this shows:**  
 VirusTotal shows that `1/91` security vendors flagged the destination IP address as malicious.
@@ -113,7 +113,7 @@ This is a low detection ratio, so it should not be used alone as proof that the 
 
 The full shortened URL `http://bit.ly/3sHkX3da12340` was checked in VirusTotal.
 
-![VirusTotal URL Check](images/screen06.png)
+![VirusTotal URL Check](images/screen6.png)
 
 **What this shows:**  
 VirusTotal shows that `1/92` security vendors flagged the URL as malicious/phishing. The URL also shows redirect-related behavior such as `meta-redirect` and `multiple-redirects`.
@@ -127,7 +127,7 @@ This result is especially relevant because the firewall alert was triggered by a
 
 The VirusTotal vendor details show that the URL was categorized as phishing by at least one vendor.
 
-![VirusTotal URL Vendor Classification](images/screen07.png)
+![VirusTotal URL Vendor Classification](images/screen7.png)
 
 **What this shows:**  
 A security vendor categorized the URL as phishing.
@@ -141,7 +141,7 @@ This finding supports the conclusion that the blocked URL is suspicious. It shou
 
 After reviewing the firewall event and threat intelligence results, the alert was classified as a True Positive.
 
-![True Positive Classification](images/screen08.png)
+![True Positive Classification](images/screen8.png)
 
 **What this shows:**  
 The alert was marked as `True Positive`.
@@ -155,7 +155,7 @@ This is not a false positive because the firewall actually blocked an outbound r
 
 The first part of the case report documents the time of activity, affected entities, and the initial classification reasoning.
 
-![Case Report Part 1](images/screen09.png)
+![Case Report Part 1](images/screen9.png)
 
 **What this shows:**  
 The report documents the source IP, source port, destination IP, destination port, URL, protocol, application, and firewall rule involved in the event.
