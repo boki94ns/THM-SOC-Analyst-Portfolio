@@ -1,4 +1,4 @@
-# Lab 02 - Firewall Blocked Blacklisted URL Investigation (TryHackMe)
+# Lab 02 – Firewall Blocked Blacklisted URL Investigation (TryHackMe)
 
 ## Scenario Overview
 
@@ -67,11 +67,11 @@ This is an outbound web-browsing attempt from an internal host to an external de
 
 ---
 
-## 3. AbuseIPDB - Destination IP Overview
+## 3. AbuseIPDB – Destination IP Overview
 
 The destination IP address `67.199.248.11` was checked in AbuseIPDB.
 
-![AbuseIPDB Destination IP Overview](images/screen3.png)
+![AbuseIPDB Destination IP Overview](images/screen9.png)
 
 **What this shows:**  
 AbuseIPDB shows that `67.199.248.11` exists in its database and has been reported `851` times. The Abuse Confidence Score is `13%`. The IP is associated with Bitly infrastructure, and the hostname/domain shown is `bit.ly`.
@@ -81,11 +81,11 @@ A `13%` Abuse Confidence Score is not strong standalone proof that the IP is mal
 
 ---
 
-## 4. AbuseIPDB - Abuse Report History
+## 4. AbuseIPDB – Abuse Report History
 
 The AbuseIPDB report history was reviewed to understand what types of suspicious activity were previously associated with the destination IP.
 
-![AbuseIPDB Report History](images/screen4.png)
+![AbuseIPDB Report History](images/screen10.png)
 
 **What this shows:**  
 The IP has previous reports related to phishing, web attacks, web spam, email spam, spoofing, and unauthorized connection attempts.
@@ -95,11 +95,11 @@ Because this IP is associated with Bitly infrastructure, it should not automatic
 
 ---
 
-## 5. VirusTotal - Destination IP Check
+## 5. VirusTotal – Destination IP Check
 
 The destination IP address `67.199.248.11` was checked in VirusTotal.
 
-![VirusTotal Destination IP Check](images/screen5.png)
+![VirusTotal Destination IP Check](images/screen11.png)
 
 **What this shows:**  
 VirusTotal shows that `1/91` security vendors flagged the destination IP address as malicious.
@@ -109,11 +109,11 @@ This is a low detection ratio, so it should not be used alone as proof that the 
 
 ---
 
-## 6. VirusTotal - Shortened URL Check
+## 6. VirusTotal – Shortened URL Check
 
 The full shortened URL `http://bit.ly/3sHkX3da12340` was checked in VirusTotal.
 
-![VirusTotal URL Check](images/screen6.png)
+![VirusTotal URL Check](images/screen12.png)
 
 **What this shows:**  
 VirusTotal shows that `1/92` security vendors flagged the URL as malicious/phishing. The URL also shows redirect-related behavior such as `meta-redirect` and `multiple-redirects`.
@@ -123,11 +123,11 @@ This result is especially relevant because the firewall alert was triggered by a
 
 ---
 
-## 7. VirusTotal - URL Vendor Classification
+## 7. VirusTotal – URL Vendor Classification
 
 The VirusTotal vendor details show that the URL was categorized as phishing by at least one vendor.
 
-![VirusTotal URL Vendor Classification](images/screen7.png)
+![VirusTotal URL Vendor Classification](images/screen13.png)
 
 **What this shows:**  
 A security vendor categorized the URL as phishing.
@@ -141,7 +141,7 @@ This finding supports the conclusion that the blocked URL is suspicious. It shou
 
 After reviewing the firewall event and threat intelligence results, the alert was classified as a True Positive.
 
-![True Positive Classification](images/screen8.png)
+![True Positive Classification](images/screen3.png)
 
 **What this shows:**  
 The alert was marked as `True Positive`.
@@ -151,11 +151,11 @@ This is not a false positive because the firewall actually blocked an outbound r
 
 ---
 
-## 9. Case Report - Affected Entities and Initial Reasoning
+## 9. Case Report – Affected Entities and Initial Reasoning
 
 The first part of the case report documents the time of activity, affected entities, and the initial classification reasoning.
 
-![Case Report Part 1](images/screen9.png)
+![Case Report Part 1](images/screen4.png)
 
 **What this shows:**  
 The report documents the source IP, source port, destination IP, destination port, URL, protocol, application, and firewall rule involved in the event.
@@ -165,11 +165,11 @@ The most important internal entity is `10.20.2.17`. This host attempted to acces
 
 ---
 
-## 10. Case Report - Classification and Escalation Reason
+## 10. Case Report – Classification and Escalation Reason
 
 The second part of the case report explains why the alert was treated as a True Positive and why escalation was required.
 
-![Case Report Part 2](images/screen10.png)
+![Case Report Part 2](images/screen5.png)
 
 **What this shows:**  
 The report explains that the internal host attempted an outbound HTTP connection to a blacklisted external URL, and that threat intelligence checks supported the suspicious nature of the event.
@@ -179,11 +179,11 @@ The alert requires escalation because an internal host attempted to access a URL
 
 ---
 
-## 11. Case Report - Remediation and Attack Indicators
+## 11. Case Report – Remediation and Attack Indicators
 
 The third part of the case report documents remediation actions and attack indicators.
 
-![Case Report Part 3](images/screen11.png)
+![Case Report Part 3](images/screen6.png)
 
 **What this shows:**  
 The report recommends keeping the destination URL and IP blocked, monitoring the source IP for repeated attempts, reviewing firewall or proxy logs, checking possible user interaction, and performing endpoint investigation if repeated attempts are detected.
@@ -197,7 +197,7 @@ The response should not stop only at blocking the destination. The internal host
 
 The alert was escalated due to the potential risk of phishing exposure, repeated outbound attempts, or further suspicious activity from the internal host.
 
-![Escalation Decision](images/screen12.png)
+![Escalation Decision](images/screen7.png)
 
 **What this shows:**  
 The alert was marked for escalation.
@@ -211,7 +211,7 @@ Escalation is appropriate because the alert is High severity and involves an int
 
 After classification, documentation, and escalation, the alert was successfully closed.
 
-![Alert Closed](images/screen13.png)
+![Alert Closed](images/screen8.png)
 
 **What this shows:**  
 The alert was closed after being investigated, documented, classified as True Positive, and escalated.
@@ -257,7 +257,7 @@ There is no evidence from this alert alone that the connection succeeded or that
 
 ## Final Classification
 
-**True Positive - Blocked outbound access to a blacklisted external URL**
+**True Positive – Blocked outbound access to a blacklisted external URL**
 
 ---
 
