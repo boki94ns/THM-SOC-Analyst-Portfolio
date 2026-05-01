@@ -4,7 +4,7 @@
 
 This lab documents a firewall alert investigation performed in the TryHackMe SOC Simulator.
 
-The alert was triggered when an internal host attempted an outbound connection to a blacklisted external URL. The firewall successfully blocked the request. The objective of this investigation was to review the firewall event, enrich the destination IP and URL using threat intelligence sources, determine the risk, and then classify the alert.
+The alert was triggered when an internal host attempted an outbound connection to a blacklisted external URL. The firewall successfully blocked the request. The objective of this investigation was to review the firewall event, analyze the network indicators, enrich the destination IP and URL using AbuseIPDB and VirusTotal, classify the alert, and document the response.
 
 ---
 
@@ -16,17 +16,19 @@ May 1st 2026, 17:38 – 17:40
 
 ## Alert Summary
 
-- Event ID: `8816`
-- Alert rule: `Access to Blacklisted External URL Blocked by Firewall`
-- Severity: `High`
-- Alert type: `Firewall`
-- Datasource: `firewall`
-- Action: `blocked`
-- Firewall rule: `Blocked Websites`
+| Field | Value |
+|---|---|
+| Event ID | `8816` |
+| Alert Rule | `Access to Blacklisted External URL Blocked by Firewall` |
+| Severity | `High` |
+| Alert Type | `Firewall` |
+| Datasource | `firewall` |
+| Action | `blocked` |
+| Firewall Rule | `Blocked Websites` |
 
 ---
 
-## Affected Entities and Network Indicators
+## Network Indicators
 
 | Field | Value |
 |---|---|
@@ -55,7 +57,7 @@ The SOC simulator shows a High severity firewall alert. The alert indicates that
 
 ## 2. Firewall Alert Details
 
-The alert details were reviewed to identify the source, destination, URL, protocol, firewall action, and rule.
+The alert details were reviewed to identify the source, destination, URL, protocol, firewall action, and triggered firewall rule.
 
 ![Firewall Alert Details](images/screen2.png)
 
@@ -63,7 +65,9 @@ The alert details were reviewed to identify the source, destination, URL, protoc
 The internal host `10.20.2.17` attempted an outbound TCP connection to destination IP `67.199.248.11` over destination port `80`. The requested URL was `http://bit.ly/3sHkX3da12340`. The firewall action was `blocked`, and the triggered rule was `Blocked Websites`.
 
 **Analysis:**  
-This is an outbound web-browsing attempt from an internal host to an external destination. Destination port `80` indicates HTTP traffic. The URL is a Bitly shortened link, which is suspicious because URL shorteners can hide the final destination and are often abused in phishing campaigns.
+This was an outbound web-browsing attempt from an internal host to an external destination. Destination port `80` indicates HTTP traffic. The URL is a Bitly shortened link, which is suspicious because URL shorteners can hide the final destination and are often abused in phishing campaigns.
+
+At this point, the alert should not be treated as proof that the internal host is compromised. The correct interpretation is that an internal host attempted to access a blacklisted external URL and the firewall successfully blocked the connection.
 
 ---
 
@@ -71,13 +75,15 @@ This is an outbound web-browsing attempt from an internal host to an external de
 
 The destination IP address `67.199.248.11` was checked in AbuseIPDB.
 
-![AbuseIPDB Destination IP Overview](images/screen9.png)
+![AbuseIPDB Destination IP Overview](images/screen3.png)
 
 **What this shows:**  
 AbuseIPDB shows that `67.199.248.11` exists in its database and has been reported `851` times. The Abuse Confidence Score is `13%`. The IP is associated with Bitly infrastructure, and the hostname/domain shown is `bit.ly`.
 
 **Analysis:**  
-A `13%` Abuse Confidence Score is not strong standalone proof that the IP is malicious. However, the large number of historical reports and the association with a URL-shortening service support treating this destination as suspicious in the context of this firewall alert.
+A `13%` Abuse Confidence Score is not strong standalone proof that the IP address is malicious. However, the number of historical reports is relevant. Since this IP belongs to Bitly infrastructure, it should be interpreted carefully: Bitly is a legitimate URL-shortening service, but attackers often abuse URL shorteners to hide phishing or malicious destinations.
+
+In this investigation, AbuseIPDB supports the suspicious nature of the destination, but it should be used as supporting evidence rather than the only basis for classification.
 
 ---
 
@@ -85,13 +91,13 @@ A `13%` Abuse Confidence Score is not strong standalone proof that the IP is mal
 
 The AbuseIPDB report history was reviewed to understand what types of suspicious activity were previously associated with the destination IP.
 
-![AbuseIPDB Report History](images/screen10.png)
+![AbuseIPDB Report History](images/screen4.png)
 
 **What this shows:**  
 The IP has previous reports related to phishing, web attacks, web spam, email spam, spoofing, and unauthorized connection attempts.
 
 **Analysis:**  
-Because this IP is associated with Bitly infrastructure, it should not automatically be treated as fully malicious. Bitly is a legitimate URL-shortening service. However, attackers frequently abuse shortened URLs to hide malicious or phishing destinations. The report history supports the firewall decision to block this request.
+The report history shows repeated suspicious activity associated with this infrastructure. Because the IP is related to Bitly, the IP itself should not automatically be treated as fully malicious. However, the presence of phishing-related reports increases the confidence that this specific blocked request was suspicious.
 
 ---
 
@@ -99,77 +105,63 @@ Because this IP is associated with Bitly infrastructure, it should not automatic
 
 The destination IP address `67.199.248.11` was checked in VirusTotal.
 
-![VirusTotal Destination IP Check](images/screen11.png)
+![VirusTotal Destination IP Check](images/screen5.png)
 
 **What this shows:**  
 VirusTotal shows that `1/91` security vendors flagged the destination IP address as malicious.
 
 **Analysis:**  
-This is a low detection ratio, so it should not be used alone as proof that the IP is malicious. However, it is a supporting indicator when combined with the firewall block, AbuseIPDB report history, and the suspicious shortened URL.
+This is a low detection ratio, so it should not be treated as absolute proof that the IP address is malicious. However, it is a supporting indicator when combined with the firewall block, the blacklisted URL, AbuseIPDB history, and the shortened URL structure.
 
 ---
 
 ## 6. VirusTotal – Shortened URL Check
 
-The full shortened URL `http://bit.ly/3sHkX3da12340` was checked in VirusTotal.
+The shortened URL `http://bit.ly/3sHkX3da12340` was checked in VirusTotal.
 
-![VirusTotal URL Check](images/screen12.png)
+![VirusTotal URL Check](images/screen6.png)
 
 **What this shows:**  
 VirusTotal shows that `1/92` security vendors flagged the URL as malicious/phishing. The URL also shows redirect-related behavior such as `meta-redirect` and `multiple-redirects`.
 
 **Analysis:**  
-This result is especially relevant because the firewall alert was triggered by access to this specific URL. Even though only one vendor flagged it, the phishing classification supports the suspicious nature of the blocked request. The presence of redirects is also important because shortened links can hide the final destination from the user.
+This result is especially relevant because the firewall alert was triggered by access to this specific URL. Even though only one vendor flagged it, the phishing classification supports the suspicious nature of the blocked request. The redirect behavior is also important because shortened links can hide the final destination from the user.
 
 ---
 
-## 7. VirusTotal – URL Vendor Classification
-
-The VirusTotal vendor details show that the URL was categorized as phishing by at least one vendor.
-
-![VirusTotal URL Vendor Classification](images/screen13.png)
-
-**What this shows:**  
-A security vendor categorized the URL as phishing.
-
-**Analysis:**  
-This finding supports the conclusion that the blocked URL is suspicious. It should be treated as a supporting indicator together with the firewall block, AbuseIPDB history, and the shortened URL structure.
-
----
-
-## 8. Classification Decision
+## 7. Classification Decision
 
 After reviewing the firewall event and threat intelligence results, the alert was classified as a True Positive.
 
-![True Positive Classification](images/screen3.png)
+![True Positive Classification](images/screen12.png)
 
 **What this shows:**  
 The alert was marked as `True Positive`.
 
 **Analysis:**  
-This is not a false positive because the firewall actually blocked an outbound request to a blacklisted URL. The classification does not prove that the internal host is compromised, but it confirms that the alert represents a real suspicious outbound connection attempt.
+This is not a false positive because the firewall actually blocked an outbound request to a blacklisted external URL. The classification does not prove that the internal host is compromised, but it confirms that the alert represents a real suspicious outbound connection attempt.
 
 ---
 
-## 9. Case Report – Affected Entities and Initial Reasoning
+## 8. Case Report – Affected Entities and Initial Reasoning
 
 The first part of the case report documents the time of activity, affected entities, and the initial classification reasoning.
 
-![Case Report Part 1](images/screen4.png)
+![Case Report Part 1](images/screen7.png)
 
 **What this shows:**  
 The report documents the source IP, source port, destination IP, destination port, URL, protocol, application, and firewall rule involved in the event.
 
 **Analysis:**  
-The most important internal entity is `10.20.2.17`. This host attempted to access the blacklisted shortened URL. Since the firewall action was `blocked`, there is no evidence from this alert alone that the connection was successful.
+The key affected internal entity is `10.20.2.17`. This host attempted to access the blacklisted shortened URL. Since the firewall action was `blocked`, there is no evidence from this alert alone that the connection was successful.
 
 ---
 
-## 10. Case Report – Classification and Escalation Reason
+## 9. Case Report – Classification and Escalation Reason
 
 The second part of the case report explains why the alert was treated as a True Positive and why escalation was required.
 
-![Case Report Part 2](images/screen5.png)
+![Case Report Part 2](images/screen8.png)
 
 **What this shows:**  
 The report explains that the internal host attempted an outbound HTTP connection to a blacklisted external URL, and that threat intelligence checks supported the suspicious nature of the event.
@@ -179,11 +171,11 @@ The alert requires escalation because an internal host attempted to access a URL
 
 ---
 
-## 11. Case Report – Remediation and Attack Indicators
+## 10. Case Report – Recommended Remediation Actions
 
-The third part of the case report documents remediation actions and attack indicators.
+The third part of the case report documents recommended remediation actions.
 
-![Case Report Part 3](images/screen6.png)
+![Case Report Part 3](images/screen9.png)
 
 **What this shows:**  
 The report recommends keeping the destination URL and IP blocked, monitoring the source IP for repeated attempts, reviewing firewall or proxy logs, checking possible user interaction, and performing endpoint investigation if repeated attempts are detected.
@@ -193,11 +185,25 @@ The response should not stop only at blocking the destination. The internal host
 
 ---
 
+## 11. Case Report – Attack Indicators
+
+The final part of the case report lists the attack indicators used during the investigation.
+
+![Case Report Part 4](images/screen10.png)
+
+**What this shows:**  
+The report lists the key indicators: source IP, destination IP, destination port, URL, protocol, firewall action, firewall rule, AbuseIPDB reports, and VirusTotal detections.
+
+**Analysis:**  
+These indicators summarize the technical evidence that supported the True Positive classification. They can also be used for further monitoring, hunting, or correlation with other firewall/proxy events.
+
+---
+
 ## 12. Escalation Decision
 
 The alert was escalated due to the potential risk of phishing exposure, repeated outbound attempts, or further suspicious activity from the internal host.
 
-![Escalation Decision](images/screen7.png)
+![Escalation Decision](images/screen11.png)
 
 **What this shows:**  
 The alert was marked for escalation.
@@ -211,7 +217,7 @@ Escalation is appropriate because the alert is High severity and involves an int
 
 After classification, documentation, and escalation, the alert was successfully closed.
 
-![Alert Closed](images/screen8.png)
+![Alert Closed](images/screen13.png)
 
 **What this shows:**  
 The alert was closed after being investigated, documented, classified as True Positive, and escalated.
@@ -247,8 +253,8 @@ There is no evidence from this alert alone that the connection succeeded or that
 | URL | `http://bit.ly/3sHkX3da12340` |
 | Protocol | `TCP` |
 | Application | `web-browsing` |
-| Firewall action | `blocked` |
-| Firewall rule | `Blocked Websites` |
+| Firewall Action | `blocked` |
+| Firewall Rule | `Blocked Websites` |
 | AbuseIPDB | `851 reports`, `13% Abuse Confidence Score` |
 | VirusTotal IP | `1/91 vendor flagged as malicious` |
 | VirusTotal URL | `1/92 vendor flagged as malicious/phishing` |
