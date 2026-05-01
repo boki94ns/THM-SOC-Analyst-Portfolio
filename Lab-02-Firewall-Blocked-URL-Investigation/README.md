@@ -4,7 +4,7 @@
 
 This lab documents a firewall alert investigation performed in the TryHackMe SOC Simulator.
 
-The alert was triggered when an internal host attempted an outbound connection to a blacklisted external URL. The firewall successfully blocked the request. The objective of this investigation was to review the firewall event, analyze the network indicators, enrich the destination IP and URL using AbuseIPDB and VirusTotal, classify the alert, and document the response.
+The alert was triggered when an internal host attempted an outbound connection to a blacklisted external URL. The firewall successfully blocked the request. The goal of this investigation was to review the firewall event, analyze the destination IP and URL using threat intelligence sources, classify the alert, and document the response actions.
 
 ---
 
@@ -57,7 +57,7 @@ The SOC simulator shows a High severity firewall alert. The alert indicates that
 
 ## 2. Firewall Alert Details
 
-The alert details were reviewed to identify the source, destination, URL, protocol, firewall action, and triggered firewall rule.
+The alert details were reviewed to identify the source, destination, URL, protocol, firewall action, and triggered rule.
 
 ![Firewall Alert Details](images/screen2.png)
 
@@ -67,7 +67,7 @@ The internal host `10.20.2.17` attempted an outbound TCP connection to destinati
 **Analysis:**  
 This was an outbound web-browsing attempt from an internal host to an external destination. Destination port `80` indicates HTTP traffic. The URL is a Bitly shortened link, which is suspicious because URL shorteners can hide the final destination and are often abused in phishing campaigns.
 
-At this point, the alert should not be treated as proof that the internal host is compromised. The correct interpretation is that an internal host attempted to access a blacklisted external URL and the firewall successfully blocked the connection.
+At this stage, the alert does not prove that the internal host is compromised. The correct interpretation is that an internal host attempted to access a blacklisted external URL and the firewall successfully blocked the connection.
 
 ---
 
@@ -131,7 +131,7 @@ This result is especially relevant because the firewall alert was triggered by a
 
 ## 7. Classification Decision
 
-After reviewing the firewall event and threat intelligence results, the alert was classified as a True Positive.
+After reviewing the firewall event, AbuseIPDB results, and VirusTotal results, the alert was classified as a True Positive.
 
 ![True Positive Classification](images/screen12.png)
 
@@ -140,6 +140,14 @@ The alert was marked as `True Positive`.
 
 **Analysis:**  
 This is not a false positive because the firewall actually blocked an outbound request to a blacklisted external URL. The classification does not prove that the internal host is compromised, but it confirms that the alert represents a real suspicious outbound connection attempt.
+
+The strongest evidence is the combination of the following:
+
+- The firewall blocked the request.
+- The triggered rule was `Blocked Websites`.
+- The URL was a shortened Bitly link.
+- AbuseIPDB showed previous abuse reports for the destination IP.
+- VirusTotal showed low but present detection for both the IP and the URL.
 
 ---
 
