@@ -1,4 +1,4 @@
-# Lab 02 – Firewall Blocked Blacklisted URL Investigation (TryHackMe)
+# Lab 02 - Firewall Blocked Blacklisted URL Investigation (TryHackMe)
 
 ## Scenario Overview
 
@@ -71,7 +71,7 @@ At this stage, the alert does not prove that the internal host is compromised. T
 
 ---
 
-## 3. AbuseIPDB – Destination IP Overview
+## 3. AbuseIPDB - Destination IP Overview
 
 The destination IP address `67.199.248.11` was checked in AbuseIPDB.
 
@@ -87,7 +87,7 @@ In this investigation, AbuseIPDB supports the suspicious nature of the destinati
 
 ---
 
-## 4. AbuseIPDB – Abuse Report History
+## 4. AbuseIPDB - Abuse Report History
 
 The AbuseIPDB report history was reviewed to understand what types of suspicious activity were previously associated with the destination IP.
 
@@ -101,7 +101,7 @@ The report history shows repeated suspicious activity associated with this infra
 
 ---
 
-## 5. VirusTotal – Destination IP Check
+## 5. VirusTotal - Destination IP Check
 
 The destination IP address `67.199.248.11` was checked in VirusTotal.
 
@@ -115,7 +115,7 @@ This is a low detection ratio, so it should not be treated as absolute proof tha
 
 ---
 
-## 6. VirusTotal – Shortened URL Check
+## 6. VirusTotal - Shortened URL Check
 
 The shortened URL `http://bit.ly/3sHkX3da12340` was checked in VirusTotal.
 
@@ -151,7 +151,7 @@ The strongest evidence is the combination of the following:
 
 ---
 
-## 8. Case Report – Affected Entities and Initial Reasoning
+## 8. Case Report - Affected Entities and Initial Reasoning
 
 The first part of the case report documents the time of activity, affected entities, and the initial classification reasoning.
 
@@ -165,7 +165,7 @@ The key affected internal entity is `10.20.2.17`. This host attempted to access 
 
 ---
 
-## 9. Case Report – Classification and Escalation Reason
+## 9. Case Report - Classification and Escalation Reason
 
 The second part of the case report explains why the alert was treated as a True Positive and why escalation was required.
 
@@ -179,7 +179,7 @@ The alert requires escalation because an internal host attempted to access a URL
 
 ---
 
-## 10. Case Report – Recommended Remediation Actions
+## 10. Case Report - Recommended Remediation Actions
 
 The third part of the case report documents recommended remediation actions.
 
@@ -193,7 +193,7 @@ The response should not stop only at blocking the destination. The internal host
 
 ---
 
-## 11. Case Report – Attack Indicators
+## 11. Case Report - Attack Indicators
 
 The final part of the case report lists the attack indicators used during the investigation.
 
