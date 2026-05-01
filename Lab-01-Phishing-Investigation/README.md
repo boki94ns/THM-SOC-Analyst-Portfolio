@@ -1,172 +1,199 @@
-# 🛡️ Lab 01 – Phishing Investigation (TryHackMe)
+# Lab 01 – Phishing Email Investigation (TryHackMe)
+
+## Scenario Overview
+
+This lab documents a phishing investigation performed in the TryHackMe SOC Simulator.  
+The alert involved an inbound email containing a suspicious external link.
+
+The objective was to determine whether the alert was a **True Positive phishing attempt** and document the investigation process.
 
 ---
 
-## 📌 Scenario Overview
-An alert was triggered for a **suspicious inbound email containing an external link**.  
-The objective of this investigation was to determine whether the alert represents a **true phishing attempt** and assess potential risk.
+## Time of Activity
+
+**May 1st 2026, 12:51 – 12:53**
 
 ---
 
-## ⏱️ Time of Activity
-May 1st 2026, 12:51 – 12:53
+## Affected Entities
+
+- **Recipient:** `j.garcia@thetrydaily.thm`
+- **Sender:** `onboarding@hrconnex.thm`
+- **Suspicious domain:** `hrconnex.thm`
+- **Suspicious URL:** `https://hrconnex.thm/onboarding/15400654060/j.garcia`
 
 ---
 
-## 👥 Affected Entities
-- **User:** j.garcia@thetrydaily.thm  
-- **Sender:** onboarding@hrconnex.thm  
-- **Domain:** hrconnex.thm  
+## 1. Alert Queue Review
+
+The investigation started from the alert queue, where multiple phishing-related alerts were visible.  
+Alert ID **8818** was selected because it involved an inbound email containing a suspicious external link.
+
+![Alert Queue Review](images/screen1.png)
+
+**What this shows:**  
+The phishing alert was selected from the SOC alert queue for further investigation.
 
 ---
 
-## 🚨 Alert Overview
+## 2. Alert Assignment
 
-The SOC alert queue shows multiple alerts. The phishing alert (ID 8818) was selected for investigation.
+The alert was assigned for investigation before opening the full alert details.
 
-![Alert Overview](images/screen1.png)
+![Alert Assignment](images/screen2.png)
 
----
-
-## 📊 Alert Details
-
-The alert shows an inbound email from an external domain targeting a specific user.
-
-![Alert Details](images/screen2.png)
+**What this shows:**  
+The alert was taken into the analyst workflow so it could be reviewed and documented.
 
 ---
 
-## 📧 Email Analysis
+## 3. Alert Details and Email Metadata
 
-The email contains social engineering elements:
-- Urgency ("Action Required")
-- Onboarding scenario
-- Request for user interaction
+The alert details show the main email metadata, including sender, recipient, direction, subject, and alert description.
 
-![Email Content](images/screen3.png)
+![Alert Details and Email Metadata](images/screen3.png)
 
----
-
-## 🔗 Embedded Link Analysis
-
-The email includes the following URL: https://hrconnex.thm/onboarding/15400654060/j.garcia
-
-
-![Embedded Link](images/screen4.png)
-
-🔍 Observations:
-- Suspicious domain
-- Unusual URL structure
-- Contains user-specific identifier
+**What this shows:**  
+The email was inbound and sent from `onboarding@hrconnex.thm` to `j.garcia@thetrydaily.thm`.  
+The subject **“Action Required: Finalize Your Onboarding Profile”** indicates urgency and is consistent with phishing social engineering.
 
 ---
 
-## 🌐 URL Reputation Check (VirusTotal)
+## 4. Email Body and Suspicious Link
 
-The full URL was analyzed using VirusTotal.
+The email body requests the user to finalize an onboarding profile by clicking an external link.
 
-![VirusTotal Result](images/screen5.png)
+![Email Body and Suspicious Link](images/screen4.png)
 
-Result:
-- No reputation found
-- URL not indexed
-
-Conclusion:
-- Likely newly created or unknown → increases suspicion
+**What this shows:**  
+The email attempts to make the recipient click a link related to onboarding.  
+This is suspicious because onboarding is a believable business process that attackers can abuse to steal credentials.
 
 ---
 
-## 🌍 Domain Analysis (SecurityTrails)
+## 5. Full URL Reputation Check – VirusTotal
 
-The domain was checked for DNS records.
+The full URL from the email was checked in VirusTotal:
 
-![SecurityTrails](images/screen6.png)
+`https://hrconnex.thm/onboarding/15400654060/j.garcia`
 
-Result:
-- No DNS records found
+![VirusTotal Full URL Check](images/screen5.png)
 
-Conclusion:
-- Domain is not established or legitimate
-
----
-
-## 🖥️ DNS Resolution Test
-
-A local DNS check was performed using the ping command.
-
-![Ping Test](images/screen7.png)
-
-Result:
-- Domain could not be resolved
-
-Conclusion:
-- Strong indicator of suspicious or non-existent infrastructure
+**What this shows:**  
+VirusTotal returned **“Item not found”**, meaning the URL had no known reputation.  
+This does not prove the URL is safe. In phishing investigations, lack of reputation can increase suspicion because new or rarely used URLs are often used in attacks.
 
 ---
 
-## 📊 Classification
+## 6. Domain DNS Check – SecurityTrails
 
-Based on all findings, the alert was classified as:
+The base domain `hrconnex.thm` was checked in SecurityTrails to verify whether DNS records existed.
+
+![SecurityTrails Domain Check](images/screen6.png)
+
+**What this shows:**  
+SecurityTrails returned no DNS records for the domain.  
+This supports the conclusion that the domain could not be verified as a legitimate or established domain.
+
+---
+
+## 7. Local DNS Resolution Test
+
+A local DNS resolution test was performed using the `ping` command.
+
+![Local DNS Resolution Test](images/screen7.png)
+
+**What this shows:**  
+The domain could not be resolved to an IP address.  
+This confirms that the domain was not publicly resolvable during the investigation.
+
+---
+
+## 8. True Positive Classification
+
+After reviewing the email, URL, domain reputation, and DNS results, the alert was classified as **True Positive**.
+
+![True Positive Classification](images/screen8.png)
+
+**What this shows:**  
+The alert was marked as a valid phishing attempt based on multiple suspicious indicators.
+
+---
+
+## 9. Case Report Documentation
+
+The case report was completed with the affected entities, classification reason, escalation reason, remediation actions, and attack indicators.
+
+![Case Report Documentation](images/screen9.png)
+
+**What this shows:**  
+The investigation findings were documented in the case report.  
+This includes why the alert was treated as phishing and what actions should be taken.
+
+---
+
+## 10. Alert Closure
+
+The platform confirmed that the alert was successfully completed and closed.
+
+![Alert Closure Confirmation](images/screen10.png)
+
+**What this shows:**  
+The phishing alert was closed after being investigated, documented, and classified correctly.
+
+---
+
+## Indicators of Compromise (IOCs)
+
+| Type | Indicator |
+|---|---|
+| Sender email | `onboarding@hrconnex.thm` |
+| Recipient | `j.garcia@thetrydaily.thm` |
+| Domain | `hrconnex.thm` |
+| URL | `https://hrconnex.thm/onboarding/15400654060/j.garcia` |
+| Subject | `Action Required: Finalize Your Onboarding Profile` |
+
+---
+
+## Why This Was Classified as Phishing
+
+The alert was classified as phishing because several indicators appeared together:
+
+- The email used an onboarding theme to gain trust.
+- The subject created urgency with **“Action Required”**.
+- The email contained an external link requiring user action.
+- The full URL had no reputation in VirusTotal.
+- The domain had no DNS records in SecurityTrails.
+- The domain could not be resolved locally using DNS.
+
+No single indicator alone is enough to prove phishing with absolute certainty.  
+However, the combination of these indicators strongly supports a **True Positive phishing classification**.
+
+---
+
+## Final Classification
 
 **True Positive – Phishing**
 
-![Classification](images/screen8.png)
+---
+
+## Recommended Remediation Actions
+
+- Block the sender/domain at the email gateway.
+- Monitor for similar emails targeting other users.
+- Educate the affected user about phishing indicators.
+- Reset credentials if the user clicked the link or submitted information.
+- Review email security logs for related activity.
 
 ---
 
-## 🚨 Escalation Decision
+## Skills Demonstrated
 
-The alert was escalated due to potential credential compromise risk.
-
-![Escalation](images/screen9.png)
-
----
-
-## ✅ Alert Closure
-
-The alert was successfully closed after investigation.
-
-![Alert Closed](images/screen10.png)
-
----
-
-## ⚠️ Indicators of Compromise (IOCs)
-
-- Suspicious domain: hrconnex.thm  
-- External email sender  
-- Phishing subject: "Action Required: Finalize Your Onboarding Profile"  
-- Suspicious URL structure  
-- No DNS records  
-- No threat intelligence reputation  
-- Domain not resolvable  
-
----
-
-## 🧠 Conclusion
-
-This alert represents a **targeted phishing attempt** using a fake onboarding scenario.
-
-The attacker attempts to:
-- Trick the user into clicking a malicious link  
-- Potentially harvest credentials  
-- Gain unauthorized access  
-
----
-
-## 🛠️ Recommended Actions
-
-- Block domain `hrconnex.thm`  
-- Educate user on phishing awareness  
-- Monitor for similar attacks  
-- Reset credentials if user interaction occurred  
-
----
-
-## 📌 Skills Demonstrated
-
-- Phishing detection  
-- Email analysis  
-- Threat intelligence usage  
-- Domain investigation  
-- SOC alert triage  
-- Incident documentation  
+- SOC alert triage
+- Email header and metadata review
+- Phishing analysis
+- URL reputation checking
+- DNS/domain investigation
+- Threat intelligence usage
+- Case report writing
+- Incident classification
