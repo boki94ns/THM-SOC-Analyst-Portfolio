@@ -2,144 +2,136 @@
 
 ## Scenario Overview
 
-This lab documents a phishing investigation performed in the TryHackMe SOC Simulator.  
-The alert involved an inbound email containing a suspicious external link.
+This lab documents a phishing investigation performed in the TryHackMe SOC Simulator. The alert involved an inbound email containing a suspicious external link.
 
-The objective was to determine whether the alert was a **True Positive phishing attempt** and document the investigation process.
+The objective was to review the alert, analyze the email and URL indicators, classify the alert, document the case report, and close the alert correctly.
 
 ---
 
 ## Time of Activity
 
-**May 1st 2026, 12:51 – 12:53**
+May 1st 2026, 12:51 – 12:53
 
 ---
 
 ## Affected Entities
 
-- **Recipient:** `j.garcia@thetrydaily.thm`
-- **Sender:** `onboarding@hrconnex.thm`
-- **Suspicious domain:** `hrconnex.thm`
-- **Suspicious URL:** `https://hrconnex.thm/onboarding/15400654060/j.garcia`
+- Recipient: `j.garcia@thetrydaily.thm`
+- Sender: `onboarding@hrconnex.thm`
+- Suspicious domain: `hrconnex.thm`
+- Suspicious URL: `https://hrconnex.thm/onboarding/15400654060/j.garcia`
 
 ---
 
 ## 1. Alert Queue Review
 
-The investigation started from the alert queue, where multiple phishing-related alerts were visible.  
-Alert ID **8818** was selected because it involved an inbound email containing a suspicious external link.
+The investigation started from the alert queue. Event ID `8818` was selected because it was categorized as a phishing alert and involved an inbound email containing a suspicious external link.
 
 ![Alert Queue Review](images/screen1.png)
 
 **What this shows:**  
-The phishing alert was selected from the SOC alert queue for further investigation.
+The SOC simulator shows multiple open alerts. Alert ID `8818` was selected for investigation because it matched a phishing scenario involving an external link.
 
 ---
 
-## 2. Alert Assignment
+## 2. Alert Details and Email Metadata
 
-The alert was assigned for investigation before opening the full alert details.
+The alert details were reviewed to understand the sender, recipient, subject, direction, and email content.
 
-![Alert Assignment](images/screen2.png)
+![Alert Details and Email Metadata](images/screen2.png)
 
 **What this shows:**  
-The alert was taken into the analyst workflow so it could be reviewed and documented.
+The email was inbound and sent from `onboarding@hrconnex.thm` to `j.garcia@thetrydaily.thm`. The subject line was `Action Required: Finalize Your Onboarding Profile`, which creates urgency and uses an onboarding scenario to encourage user interaction.
 
 ---
 
-## 3. Alert Details and Email Metadata
+## 3. Full URL Reputation Check – VirusTotal
 
-The alert details show the main email metadata, including sender, recipient, direction, subject, and alert description.
+The full URL extracted from the email was checked in VirusTotal.
 
-![Alert Details and Email Metadata](images/screen3.png)
+Analyzed URL: `https://hrconnex.thm/onboarding/15400654060/j.garcia`
+
+![VirusTotal Full URL Check](images/screen3.png)
 
 **What this shows:**  
-The email was inbound and sent from `onboarding@hrconnex.thm` to `j.garcia@thetrydaily.thm`.  
-The subject **“Action Required: Finalize Your Onboarding Profile”** indicates urgency and is consistent with phishing social engineering.
+VirusTotal returned `Item not found`, meaning the full URL had no known reputation. This does not prove the URL is safe. In phishing investigations, a lack of reputation can increase suspicion because newly created or rarely used URLs are often used in phishing campaigns.
 
 ---
 
-## 4. Email Body and Suspicious Link
-
-The email body requests the user to finalize an onboarding profile by clicking an external link.
-
-![Email Body and Suspicious Link](images/screen4.png)
-
-**What this shows:**  
-The email attempts to make the recipient click a link related to onboarding.  
-This is suspicious because onboarding is a believable business process that attackers can abuse to steal credentials.
-
----
-
-## 5. Full URL Reputation Check – VirusTotal
-
-The full URL from the email was checked in VirusTotal:
-
-`https://hrconnex.thm/onboarding/15400654060/j.garcia`
-
-![VirusTotal Full URL Check](images/screen5.png)
-
-**What this shows:**  
-VirusTotal returned **“Item not found”**, meaning the URL had no known reputation.  
-This does not prove the URL is safe. In phishing investigations, lack of reputation can increase suspicion because new or rarely used URLs are often used in attacks.
-
----
-
-## 6. Domain DNS Check – SecurityTrails
+## 4. Domain DNS Check – SecurityTrails
 
 The base domain `hrconnex.thm` was checked in SecurityTrails to verify whether DNS records existed.
 
-![SecurityTrails Domain Check](images/screen6.png)
+![SecurityTrails Domain Check](images/screen4.png)
 
 **What this shows:**  
-SecurityTrails returned no DNS records for the domain.  
-This supports the conclusion that the domain could not be verified as a legitimate or established domain.
+SecurityTrails returned no DNS records for `hrconnex.thm`. This supports the finding that the domain could not be verified as a legitimate or established domain.
 
 ---
 
-## 7. Local DNS Resolution Test
+## 5. Local DNS Resolution Test
 
 A local DNS resolution test was performed using the `ping` command.
 
-![Local DNS Resolution Test](images/screen7.png)
+![Local DNS Resolution Test](images/screen5.png)
 
 **What this shows:**  
-The domain could not be resolved to an IP address.  
-This confirms that the domain was not publicly resolvable during the investigation.
+The domain `hrconnex.thm` could not be resolved to an IP address. This confirms that the domain was not publicly resolvable during the investigation.
 
 ---
 
-## 8. True Positive Classification
+## 6. True Positive Classification
 
-After reviewing the email, URL, domain reputation, and DNS results, the alert was classified as **True Positive**.
+After reviewing the email content, the suspicious URL, the lack of reputation in VirusTotal, missing DNS records in SecurityTrails, and failed local DNS resolution, the alert was classified as a True Positive.
 
-![True Positive Classification](images/screen8.png)
+![True Positive Classification](images/screen6.png)
 
 **What this shows:**  
-The alert was marked as a valid phishing attempt based on multiple suspicious indicators.
+The alert was marked as `True Positive`, meaning the investigation supported that this was a valid phishing attempt rather than a false positive.
 
 ---
 
-## 9. Case Report Documentation
+## 7. Case Report Documentation – Part 1
 
-The case report was completed with the affected entities, classification reason, escalation reason, remediation actions, and attack indicators.
+The first part of the case report documents the time of activity, affected entities, classification reason, and escalation reason.
 
-![Case Report Documentation](images/screen9.png)
+![Case Report Documentation Part 1](images/screen7.png)
 
 **What this shows:**  
-The investigation findings were documented in the case report.  
-This includes why the alert was treated as phishing and what actions should be taken.
+The report includes the affected user, sender, domain, and the reason for classifying the alert as a True Positive phishing attempt.
 
 ---
 
-## 10. Alert Closure
+## 8. Case Report Documentation – Part 2
 
-The platform confirmed that the alert was successfully completed and closed.
+The second part of the case report documents remediation actions and attack indicators.
+
+![Case Report Documentation Part 2](images/screen8.png)
+
+**What this shows:**  
+The report includes recommended remediation actions such as blocking the sender domain, educating the user, monitoring for similar phishing attempts, and resetting credentials if user interaction is suspected.
+
+---
+
+## 9. Escalation Decision
+
+The alert was escalated due to the risk of credential harvesting and possible unauthorized access if the user interacted with the phishing link.
+
+![Escalation Decision](images/screen9.png)
+
+**What this shows:**  
+The alert was marked for escalation because phishing emails can lead to credential compromise and further compromise of the organization.
+
+---
+
+## 10. Alert Closure Confirmation
+
+After the investigation and case report were completed, the alert was submitted and closed.
 
 ![Alert Closure Confirmation](images/screen10.png)
 
 **What this shows:**  
-The phishing alert was closed after being investigated, documented, and classified correctly.
+The platform confirmed that the alert was successfully closed after being investigated, documented, classified, and escalated.
 
 ---
 
@@ -157,17 +149,16 @@ The phishing alert was closed after being investigated, documented, and classifi
 
 ## Why This Was Classified as Phishing
 
-The alert was classified as phishing because several indicators appeared together:
+The alert was classified as phishing because several suspicious indicators appeared together:
 
 - The email used an onboarding theme to gain trust.
-- The subject created urgency with **“Action Required”**.
-- The email contained an external link requiring user action.
+- The subject created urgency with `Action Required`.
+- The email contained an external link requiring user interaction.
 - The full URL had no reputation in VirusTotal.
 - The domain had no DNS records in SecurityTrails.
 - The domain could not be resolved locally using DNS.
 
-No single indicator alone is enough to prove phishing with absolute certainty.  
-However, the combination of these indicators strongly supports a **True Positive phishing classification**.
+No single indicator alone proves phishing with absolute certainty. However, the combination of these indicators strongly supports a True Positive phishing classification.
 
 ---
 
@@ -190,10 +181,10 @@ However, the combination of these indicators strongly supports a **True Positive
 ## Skills Demonstrated
 
 - SOC alert triage
-- Email header and metadata review
+- Email metadata review
 - Phishing analysis
 - URL reputation checking
-- DNS/domain investigation
+- DNS and domain investigation
 - Threat intelligence usage
 - Case report writing
 - Incident classification
