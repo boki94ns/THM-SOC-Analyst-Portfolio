@@ -20,31 +20,81 @@ May 1st 2026, 12:51 – 12:53
 
 ---
 
-## 📧 Email Analysis
+## 📊 Alert Overview
 
-The email attempts to impersonate an onboarding process and pressures the user to click a malicious link.
+![Alert Overview](images/screen1.png)
 
-![Phishing Email](images/screen1.png)
+---
+
+## 📧 Email Details
+
+The email contains a phishing message requesting the user to finalize onboarding.
+
+![Email Content](images/screen2.png)
+
+---
+
+## 🔗 Embedded Link Analysis
+
+The link inside the email redirects to a suspicious domain.
+
+![Suspicious Link](images/screen3.png)
 
 ---
 
 ## 🌐 URL Investigation
 
-The embedded URL appears suspicious and does not resolve properly.
+The domain does not resolve properly and appears inactive.
 
-![URL Analysis](images/screen2.png)
+![URL Check](images/screen4.png)
 
 ---
 
-## 🔍 Threat Intelligence
+## 🔍 Threat Intelligence Check – VirusTotal
 
-Multiple sources were checked:
+No reputation found for the domain.
 
-* VirusTotal → No reputation
-* SecurityTrails → No DNS records
-* DNS resolution → Failed
+![VirusTotal](images/screen5.png)
 
-![SecurityTrails](images/screen3.png)
+---
+
+## 🔍 Threat Intelligence Check – SecurityTrails
+
+No DNS records found.
+
+![SecurityTrails](images/screen6.png)
+
+---
+
+## 🖥️ Local DNS Resolution Test
+
+Ping test confirms domain cannot be resolved.
+
+![Ping Test](images/screen7.png)
+
+---
+
+## ⚠️ SIEM Alert Classification
+
+Alert classified as phishing.
+
+![Alert Classification](images/screen8.png)
+
+---
+
+## 📝 Case Report Entry
+
+Documented analysis and response actions.
+
+![Case Report](images/screen9.png)
+
+---
+
+## ✅ Alert Closure
+
+The alert was successfully closed as a true positive.
+
+![Alert Closed](images/screen10.png)
 
 ---
 
@@ -63,17 +113,11 @@ Multiple sources were checked:
 
 **True Positive – Phishing Attack**
 
-Reason:
-The email uses social engineering, impersonation, and a malicious link targeting credential harvesting.
-
 ---
 
 ## 🚨 Escalation
 
 **Yes**
-
-Reason:
-High likelihood of credential compromise and targeted attack against employee.
 
 ---
 
@@ -89,4 +133,3 @@ High likelihood of credential compromise and targeted attack against employee.
 ## ✅ Conclusion
 
 This alert represents a targeted phishing attempt designed to harvest user credentials and potentially gain unauthorized access to the organization.
-
